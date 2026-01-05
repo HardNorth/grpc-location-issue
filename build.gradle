@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src/main/java", "build/classes/java/quarkus-generated-sources/grpc"]
+        }
+        resources {
+            srcDirs = ["src/main/resources",
+//                       "src/main/proto", // Uncomment to fix
+                       "protocols/proto" // Comment to fix
+            ]
+        }
+    }
+}
+
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-grpc'
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+}
+
+group = 'net.hardnorth'
+version = '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+test {
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+quarkus {
+    quarkusBuildProperties.put("quarkus.grpc.codegen.proto-directory", "${project.projectDir}/protocols/proto") // Comment to fix
+}
